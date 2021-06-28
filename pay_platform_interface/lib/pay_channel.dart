@@ -11,16 +11,16 @@
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
-
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
+import 'core/exceptions.dart';
 import 'core/payment_configuration.dart';
 import 'core/payment_item.dart';
-import 'util/configurations.dart';
 import 'pay_platform_interface.dart';
+import 'util/configurations.dart';
 
 /// An implementation of the contract in this plugin that uses a [MethodChannel]
 /// to communicate with the native end.
@@ -35,8 +35,7 @@ import 'pay_platform_interface.dart';
 /// ```
 class PayMethodChannel extends PayPlatform {
   // The channel used to send messages down the native pipe.
-  final MethodChannel _channel =
-      const MethodChannel('plugins.flutter.io/pay_channel');
+  final MethodChannel _channel = const MethodChannel('plugins.flutter.io/pay_channel');
 
   /// Determines whether a user can pay with the provider in the configuration.
   ///
@@ -45,8 +44,7 @@ class PayMethodChannel extends PayPlatform {
   @override
   Future<bool> userCanPay(PaymentConfiguration paymentConfiguration) async {
     final configurationMap = await Configurations.build(paymentConfiguration);
-    return await _channel.invokeMethod(
-        'userCanPay', jsonEncode(configurationMap));
+    return await _channel.invokeMethod('userCanPay', jsonEncode(configurationMap));
   }
 
   /// Shows the payment selector to complete the payment operation.
@@ -60,12 +58,16 @@ class PayMethodChannel extends PayPlatform {
     PaymentConfiguration paymentConfiguration,
     List<PaymentItem> paymentItems,
   ) async {
-    final configurationMap = await Configurations.build(paymentConfiguration);
-    final paymentResult = await _channel.invokeMethod('showPaymentSelector', {
-      'payment_profile': jsonEncode(configurationMap),
-      'payment_items': paymentItems.map((item) => item.toMap()).toList(),
-    });
+    try {
+      final configurationMap = await Configurations.build(paymentConfiguration);
+      final paymentResult = await _channel.invokeMethod('showPaymentSelector', {
+        'payment_profile': jsonEncode(configurationMap),
+        'payment_items': paymentItems.map((item) => item.toMap()).toList(),
+      });
 
-    return jsonDecode(paymentResult);
+      return jsonDecode(paymentResult);
+    } on PlatformException catch (exception) {
+      throw PaymentException.fromPlatformException(exception);
+    }
   }
 }

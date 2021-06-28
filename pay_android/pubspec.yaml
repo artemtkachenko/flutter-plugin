@@ -67,7 +67,8 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  pay_platform_interface: ^1.0.1
+  pay_platform_interface:
+    path: ../pay_platform_interface
   flutter_svg: ^0.22.0
 
 dev_dependencies:

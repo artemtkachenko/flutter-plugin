@@ -183,7 +183,10 @@ class GooglePayHandler(private val activity: Activity) :
                 }
 
                 Activity.RESULT_CANCELED -> {
-                    // The user cancelled the payment attempt
+                    loadPaymentDataResult!!.error(
+                            "payment-error/canceled",
+                            "Payment was cancelled",
+                            null)
                     true
                 }
 
