@@ -20,6 +20,9 @@ export 'package:pay_platform_interface/core/payment_configuration.dart'
 export 'package:pay_platform_interface/core/payment_item.dart'
     show PaymentItem, PaymentItemType, PaymentItemStatus;
 
+export 'package:pay_platform_interface/core/exceptions.dart'
+    show PaymentCancelledException, UnknownPaymentException;
+
 export 'package:pay_android/pay_android.dart'
     show RawGooglePayButton, GooglePayButtonStyle, GooglePayButtonType;
 
